@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Box,
   Button,
@@ -18,6 +18,13 @@ export const ConversationsList: React.FC = () => {
     switchConversation,
     deleteConversation,
   } = useChatStore();
+
+  // Create initial conversation if none exists
+  useEffect(() => {
+    if (!currentConversationId) {
+      createNewConversation();
+    }
+  }, [currentConversationId, createNewConversation]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString();

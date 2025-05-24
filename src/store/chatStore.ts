@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { ChatState, Message, Conversation } from '../types/chat';
+import { ChatState, Message } from '../types/chat';
 import { useKnowledgeStore } from './knowledgeStore';
 
 export const useChatStore = create<ChatState>()(
@@ -8,6 +8,7 @@ export const useChatStore = create<ChatState>()(
     (set, get) => ({
       conversations: {},
       currentConversationId: null,
+      currentMessages: [],
       isLoading: false,
 
       createNewConversation: () => {
@@ -23,12 +24,16 @@ export const useChatStore = create<ChatState>()(
             },
           },
           currentConversationId: conversationId,
+          currentMessages: [],
         }));
         return conversationId;
       },
 
       switchConversation: (conversationId: string) => {
-        set({ currentConversationId: conversationId });
+        set((state) => ({
+          currentConversationId: conversationId,
+          currentMessages: state.conversations[conversationId].messages,
+        }));
       },
 
       deleteConversation: (conversationId: string) => {
@@ -60,6 +65,7 @@ export const useChatStore = create<ChatState>()(
                   updatedAt: new Date().toISOString(),
                 },
               },
+              currentMessages: [...state.currentMessages,  messageWithId],
             };
           }
 
@@ -72,6 +78,7 @@ export const useChatStore = create<ChatState>()(
                 updatedAt: new Date().toISOString(),
               },
             },
+            currentMessages: [...state.currentMessages,  messageWithId],
           };
         });
 
@@ -92,36 +99,7 @@ export const useChatStore = create<ChatState>()(
             state.currentConversationId,
             messageId
           );
-
-          // Update message in conversation
-          set((state) => ({
-            conversations: {
-              ...state.conversations,
-              [state.currentConversationId!]: {
-                ...state.conversations[state.currentConversationId!],
-                messages: state.conversations[state.currentConversationId!].messages.map((m) =>
-                  m.id === messageId ? { ...m, isKnowledge: true } : m
-                ),
-              },
-            },
-          }));
         }
-      },
-
-      clearCurrentConversation: () => {
-        set((state) => {
-          if (!state.currentConversationId) return state;
-          return {
-            conversations: {
-              ...state.conversations,
-              [state.currentConversationId]: {
-                ...state.conversations[state.currentConversationId],
-                messages: [],
-                updatedAt: new Date().toISOString(),
-              },
-            },
-          };
-        });
       },
 
       setLoading: (loading: boolean) => set({ isLoading: loading }),

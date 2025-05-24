@@ -5,18 +5,17 @@ import { MessageInput } from './MessageInput';
 import { MessageCard } from './MessageCard';
 import { SIDEBAR_WIDTH } from './Sidebar';
 
-export const ChatArea: React.FC = () => {
+interface ChatAreaProps {
+  onSwitchToKnowledge: () => void;
+}
+
+export const ChatArea: React.FC<ChatAreaProps> = ({ onSwitchToKnowledge }) => {
   const {
-    conversations,
-    currentConversationId,
+    currentMessages,
     flagAsKnowledge,
   } = useChatStore();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const currentMessages = currentConversationId
-    ? conversations[currentConversationId].messages
-    : [];
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -50,6 +49,7 @@ export const ChatArea: React.FC = () => {
             key={index}
             message={message}
             onFlagAsKnowledge={flagAsKnowledge}
+            onSave={onSwitchToKnowledge}
           />
         ))}
         <div ref={messagesEndRef} /> {/* Invisible element at the bottom */}

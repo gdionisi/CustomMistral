@@ -6,7 +6,7 @@ import {
   IconButton,
   Tooltip,
 } from '@mui/material';
-import FlagIcon from '@mui/icons-material/Flag';
+import SaveIcon from '@mui/icons-material/Save';
 import { Message } from 'types/chat';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -16,9 +16,17 @@ import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 interface MessageCardProps {
   message: Message;
   onFlagAsKnowledge: (id: string) => void;
+  onSave?: () => void;
 }
 
-export const MessageCard: React.FC<MessageCardProps> = ({ message, onFlagAsKnowledge }) => {
+export const MessageCard: React.FC<MessageCardProps> = ({ message, onFlagAsKnowledge, onSave }) => {
+  const handleSave = () => {
+    onFlagAsKnowledge(message.id);
+    if (onSave) {
+      onSave();
+    }
+  };
+
   return (
     <Paper
       elevation={0}
@@ -35,22 +43,20 @@ export const MessageCard: React.FC<MessageCardProps> = ({ message, onFlagAsKnowl
         <Typography variant="subtitle2">
           {message.role === 'user' ? 'You:' : 'Assistant:'}
         </Typography>
-        {message.role === 'assistant' && (
-          <Tooltip title={message.isKnowledge ? "This is important knowledge" : "Flag as important knowledge"}>
-            <IconButton
-              size="small"
-              onClick={() => onFlagAsKnowledge(message.id)}
-              sx={{
-                color: message.isKnowledge ? 'warning.main' : 'inherit',
-                '&:hover': {
-                  color: 'warning.main',
-                },
-              }}
-            >
-              <FlagIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        )}
+        <Tooltip title="Save to knowledge base">
+          <IconButton
+            size="small"
+            onClick={handleSave}
+            sx={{
+              color: 'inherit',
+              '&:hover': {
+                color: 'success.main',
+              },
+            }}
+          >
+            <SaveIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
       </Box>
       {message.role === 'assistant' ? (
         <Box sx={{ 
@@ -105,7 +111,7 @@ export const MessageCard: React.FC<MessageCardProps> = ({ message, onFlagAsKnowl
                 )
               }
             }}
-            >
+          >
             {message.content}
           </ReactMarkdown>
         </Box>

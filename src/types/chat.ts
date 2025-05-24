@@ -3,7 +3,6 @@ export interface Message {
   content: string;
   timestamp: string;
   id: string;
-  isKnowledge?: boolean;
   needsWebSearch?: boolean;
 }
 
@@ -17,13 +16,13 @@ export interface Conversation {
 export interface ChatState {
   conversations: Record<string, Conversation>;
   currentConversationId: string | null;
+  currentMessages: Message[];
   isLoading: boolean;
   createNewConversation: () => string;
   switchConversation: (conversationId: string) => void;
   deleteConversation: (conversationId: string) => void;
   addMessage: (message: Message) => Message;
   flagAsKnowledge: (messageId: string) => void;
-  clearCurrentConversation: () => void;
   setLoading: (loading: boolean) => void;
 }
 

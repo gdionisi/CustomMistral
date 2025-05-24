@@ -15,8 +15,7 @@ export const MessageInput: React.FC = () => {
   const [needsWebSearch, setNeedsWebSearch] = useState(false);
 
   const {
-    conversations,
-    currentConversationId,
+    currentMessages,
     addMessage,
     isLoading,
     setLoading,
@@ -40,9 +39,6 @@ export const MessageInput: React.FC = () => {
     setLoading(true);
 
     try {
-      const currentMessages = currentConversationId
-        ? conversations[currentConversationId].messages
-        : [];
       const response = await mistralService.getChatCompletion([...currentMessages, userMessage]);
       const assistantMessage = {
         id: crypto.randomUUID(),
