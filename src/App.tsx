@@ -1,10 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { useChatStore } from './store/chatStore';
+import { useChatStore } from './store/chat/store';
 import { mistralService } from './services/mistralClient';
-import { Message } from './types/chat';
+import { Message } from './store/chat/types';
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Paper,
+  IconButton,
+  Divider,
+  useTheme,
+} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SendIcon from '@mui/icons-material/Send';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 function App() {
   const [input, setInput] = useState('');
+  const theme = useTheme();
   const {
     conversations,
     currentConversationId,
@@ -61,102 +75,137 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-text-primary flex">
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* Sidebar */}
-      <div className="w-80 border-r border-border p-4 flex flex-col">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Conversations</h2>
-          <button
+      <Paper
+        elevation={0}
+        sx={{
+          width: 320,
+          borderRight: 1,
+          borderColor: 'divider',
+          p: 2,
+          display: 'flex',
+          flexDirection: 'column',
+          bgcolor: 'background.paper',
+        }}
+      >
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Typography variant="h6">Conversations</Typography>
+          <Button
+            variant="outlined"
+            size="small"
             onClick={() => createNewConversation()}
-            className="px-3 py-1 bg-surface text-text-primary border border-border rounded hover:bg-opacity-80"
           >
             New
-          </button>
-        </div>
+          </Button>
+        </Box>
 
-        <div className="flex-1 overflow-y-auto space-y-2">
+        <Divider sx={{ mb: 2 }} />
+
+        <Box sx={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 1 }}>
           {Object.values(conversations)
             .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
             .map((conversation) => (
-              <div
+              <Paper
                 key={conversation.id}
-                className={`p-3 rounded-lg cursor-pointer ${
-                  conversation.id === currentConversationId
-                    ? 'bg-surface border border-border'
-                    : 'hover:bg-surface/50'
-                }`}
+                elevation={0}
+                sx={{
+                  p: 1.5,
+                  cursor: 'pointer',
+                  bgcolor: conversation.id === currentConversationId ? 'action.selected' : 'transparent',
+                  '&:hover': {
+                    bgcolor: 'action.hover',
+                  },
+                }}
               >
-                <div className="flex justify-between items-start mb-2">
-                  <div className="text-sm text-text-secondary">
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                  <Typography variant="caption" color="text.secondary">
                     {formatDate(conversation.createdAt)}
-                  </div>
-                  <button
+                  </Typography>
+                  <IconButton
+                    size="small"
                     onClick={(e) => {
                       e.stopPropagation();
                       deleteConversation(conversation.id);
                     }}
-                    className="text-text-secondary hover:text-text-primary"
                   >
-                    🗑️
-                  </button>
-                </div>
-                <div
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+                <Box
                   onClick={() => switchConversation(conversation.id)}
-                  className="text-sm"
+                  sx={{ cursor: 'pointer' }}
                 >
-                  {conversation.messages[0]?.content.slice(0, 50) || 'New conversation'}
-                  {conversation.messages[0]?.content.length > 50 ? '...' : ''}
-                </div>
-                <div className="text-xs text-text-secondary mt-1">
-                  {conversation.messages.length} messages
-                </div>
-              </div>
+                  <Typography variant="body2" noWrap>
+                    {conversation.messages[0]?.content.slice(0, 50) || 'New conversation'}
+                    {conversation.messages[0]?.content.length > 50 ? '...' : ''}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {conversation.messages.length} messages
+                  </Typography>
+                </Box>
+              </Paper>
             ))}
-        </div>
-      </div>
+        </Box>
+      </Paper>
 
       {/* Main chat area */}
-      <div className="flex-1 flex flex-col">
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ flex: 1, overflow: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
           {currentConversationId &&
             conversations[currentConversationId].messages.map((message, index) => (
-              <div
+              <Paper
                 key={index}
-                className={`p-6 rounded-lg ${
-                  message.role === 'user'
-                    ? 'bg-surface ml-4'
-                    : 'bg-surface border border-border mr-4'
-                }`}
+                elevation={0}
+                sx={{
+                  p: 2,
+                  maxWidth: '80%',
+                  alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start',
+                  bgcolor: message.role === 'user' ? 'primary.main' : 'background.paper',
+                  color: message.role === 'user' ? 'primary.contrastText' : 'text.primary',
+                }}
               >
-                <div className="font-bold mb-2">
+                <Typography variant="subtitle2" sx={{ mb: 1 }}>
                   {message.role === 'user' ? 'You:' : 'Assistant:'}
-                </div>
-                <div className="text-text-secondary">{message.content}</div>
-              </div>
+                </Typography>
+                <Typography variant="body1">{message.content}</Typography>
+              </Paper>
             ))}
-        </div>
+        </Box>
 
-        <form onSubmit={handleSubmit} className="p-4 border-t border-border">
-          <div className="flex gap-4">
-            <input
-              type="text"
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            p: 2,
+            borderTop: 1,
+            borderColor: 'divider',
+            bgcolor: 'background.paper',
+          }}
+        >
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <TextField
+              fullWidth
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type your message here..."
-              className="flex-1 p-4 bg-surface text-text-primary border border-border rounded focus:outline-none focus:border-blue-500"
               disabled={isLoading}
+              variant="outlined"
+              size="small"
             />
-            <button
+            <LoadingButton
               type="submit"
-              disabled={isLoading}
-              className="px-6 py-4 bg-surface text-text-primary border border-border rounded hover:bg-opacity-80 disabled:opacity-50"
+              loading={isLoading}
+              variant="contained"
+              endIcon={<SendIcon />}
+              disabled={!input.trim()}
             >
-              {isLoading ? 'Thinking...' : 'Send'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+              Send
+            </LoadingButton>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 }
 
