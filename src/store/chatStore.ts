@@ -1,17 +1,91 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { ChatState, Message } from '../types/chat';
+import { ChatState, Message, Conversation } from '../types/chat';
 
 export const useChatStore = create<ChatState>()(
   persist(
-    (set) => ({
-      messages: [],
+    (set, get) => ({
+      conversations: {},
+      currentConversationId: null,
       isLoading: false,
-      addMessage: (message: Message) =>
+
+      createNewConversation: () => {
+        const conversationId = crypto.randomUUID();
         set((state) => ({
-          messages: [...state.messages, message],
-        })),
-      clearMessages: () => set({ messages: [] }),
+          conversations: {
+            ...state.conversations,
+            [conversationId]: {
+              id: conversationId,
+              messages: [],
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+          },
+          currentConversationId: conversationId,
+        }));
+        return conversationId;
+      },
+
+      switchConversation: (conversationId: string) => {
+        set({ currentConversationId: conversationId });
+      },
+
+      deleteConversation: (conversationId: string) => {
+        set((state) => {
+          const { [conversationId]: _, ...remainingConversations } = state.conversations;
+          return {
+            conversations: remainingConversations,
+            currentConversationId: state.currentConversationId === conversationId ? null : state.currentConversationId,
+          };
+        });
+      },
+
+      addMessage: (message: Message) => {
+        set((state) => {
+          if (!state.currentConversationId) {
+            const conversationId = get().createNewConversation();
+            return {
+              conversations: {
+                ...state.conversations,
+                [conversationId]: {
+                  id: conversationId,
+                  messages: [message],
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString(),
+                },
+              },
+            };
+          }
+
+          return {
+            conversations: {
+              ...state.conversations,
+              [state.currentConversationId]: {
+                ...state.conversations[state.currentConversationId],
+                messages: [...state.conversations[state.currentConversationId].messages, message],
+                updatedAt: new Date().toISOString(),
+              },
+            },
+          };
+        });
+      },
+
+      clearCurrentConversation: () => {
+        set((state) => {
+          if (!state.currentConversationId) return state;
+          return {
+            conversations: {
+              ...state.conversations,
+              [state.currentConversationId]: {
+                ...state.conversations[state.currentConversationId],
+                messages: [],
+                updatedAt: new Date().toISOString(),
+              },
+            },
+          };
+        });
+      },
+
       setLoading: (loading: boolean) => set({ isLoading: loading }),
     }),
     {

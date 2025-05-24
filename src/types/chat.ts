@@ -4,11 +4,22 @@ export interface Message {
   timestamp: string;
 }
 
-export interface ChatState {
+export interface Conversation {
+  id: string;
   messages: Message[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ChatState {
+  conversations: Record<string, Conversation>;
+  currentConversationId: string | null;
   isLoading: boolean;
+  createNewConversation: () => string;
+  switchConversation: (conversationId: string) => void;
+  deleteConversation: (conversationId: string) => void;
   addMessage: (message: Message) => void;
-  clearMessages: () => void;
+  clearCurrentConversation: () => void;
   setLoading: (loading: boolean) => void;
 }
 
