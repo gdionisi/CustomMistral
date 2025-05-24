@@ -13,21 +13,20 @@ interface SidebarProps {
   onTabChange: (event: React.SyntheticEvent, newValue: number) => void;
 }
 
+export const SIDEBAR_WIDTH = 320;
+
 export const Sidebar: React.FC<SidebarProps> = ({ sidebarTab, onTabChange }) => {
   return (
     <Paper
       elevation={0}
       sx={{
-        width: 320,
+        width: SIDEBAR_WIDTH,
         height: '100vh',
         borderRight: 1,
         borderColor: 'divider',
         display: 'flex',
         flexDirection: 'column',
         bgcolor: 'background.paper',
-        position: 'fixed',
-        left: 0,
-        top: 0,
       }}
     >
       <Tabs

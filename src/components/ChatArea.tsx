@@ -3,6 +3,7 @@ import { Box } from '@mui/material';
 import { useChatStore } from 'store/chatStore';
 import { MessageInput } from './MessageInput';
 import { MessageCard } from './MessageCard';
+import { SIDEBAR_WIDTH } from './Sidebar';
 
 export const ChatArea: React.FC = () => {
   const {
@@ -28,10 +29,9 @@ export const ChatArea: React.FC = () => {
   return (
     <Box 
       sx={{ 
-        flex: 1, 
         display: 'flex', 
         flexDirection: 'column',
-        ml: '320px', // Match sidebar width
+        width: `calc(100vw - ${SIDEBAR_WIDTH}px)`,
         height: '100vh',
       }}
     >
