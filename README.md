@@ -1,52 +1,78 @@
 # Custom Mistral Chat
 
-A Streamlit-based chat interface for Mistral AI's language models with conversation memory capabilities.
+A modern chat interface built with React and TypeScript, powered by Mistral AI.
 
 ## Features
 
-- Real-time chat interface using Mistral AI's API
-- Conversation history persistence
-- Clean and modern UI
-- Easy to use and extend
+- Modern, responsive UI built with React and Tailwind CSS
+- Real-time chat with Mistral AI
+- Persistent chat history
+- TypeScript for better type safety and developer experience
+- Clean and maintainable code structure
+
+## Prerequisites
+
+- Node.js (v14 or higher)
+- npm or yarn
+- Mistral AI API key
 
 ## Setup
 
-1. Clone the repository
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd custom-mistral
+```
+
 2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Create a `.env` file in the root directory and add your Mistral API key:
-   ```
-   MISTRAL_API_KEY=your_api_key_here
-   ```
-4. Run the application:
-   ```bash
-   streamlit run app/main.py
-   ```
+```bash
+npm install
+# or
+yarn install
+```
 
-## Usage
+3. Create a `.env` file in the root directory and add your Mistral AI API key:
+```
+REACT_APP_MISTRAL_API_KEY=your_api_key_here
+```
 
-1. Open your browser and navigate to the URL shown in the terminal (usually http://localhost:8501)
-2. Start chatting with the AI assistant
-3. Use the sidebar to clear conversation history if needed
+4. Start the development server:
+```bash
+npm start
+# or
+yarn start
+```
+
+The application will be available at `http://localhost:3000`.
 
 ## Project Structure
 
 ```
-CustomMistral/
-├── app/
-│   ├── main.py           # Streamlit app entry point
-│   ├── chat/
-│   │   └── chat_manager.py # Chat logic and Mistral integration
-│   └── utils/
-│       └── config.py     # Configuration and environment variables
-├── requirements.txt
-└── README.md
+src/
+  ├── types/         # TypeScript type definitions
+  ├── store/         # State management with Zustand
+  ├── services/      # API and external service integrations
+  ├── components/    # React components
+  ├── App.tsx        # Main application component
+  └── index.tsx      # Application entry point
 ```
 
-## Requirements
+## Technologies Used
 
-- Python 3.8+
-- Mistral AI API key
-- Dependencies listed in requirements.txt
+- React
+- TypeScript
+- Tailwind CSS
+- Zustand (State Management)
+- Mistral AI SDK
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
