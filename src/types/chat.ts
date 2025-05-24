@@ -4,6 +4,7 @@ export interface Message {
   timestamp: string;
   id: string;
   isKnowledge?: boolean;
+  needsWebSearch?: boolean;
 }
 
 export interface Conversation {

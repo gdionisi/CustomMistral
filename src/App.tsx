@@ -12,6 +12,8 @@ import {
   Tooltip,
   Tabs,
   Tab,
+  FormControlLabel,
+  Checkbox,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
@@ -20,10 +22,12 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { Message } from 'types/chat';
 import { useChatStore } from 'store/chatStore';
 import { KnowledgeManager } from './components/KnowledgeManager';
+import SearchIcon from '@mui/icons-material/Search';
 
 function App() {
   const [input, setInput] = useState('');
   const [sidebarTab, setSidebarTab] = useState(0);
+  const [needsWebSearch, setNeedsWebSearch] = useState(false);
   const theme = useTheme();
 
   const {
@@ -54,10 +58,12 @@ function App() {
       role: 'user',
       content: input,
       timestamp: new Date().toISOString(),
+      needsWebSearch: needsWebSearch,
     };
 
     addMessage(userMessage);
     setInput('');
+    setNeedsWebSearch(false);
     setLoading(true);
 
     try {
@@ -233,25 +239,39 @@ function App() {
             bgcolor: 'background.paper',
           }}
         >
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <TextField
-              fullWidth
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Type your message here..."
-              disabled={isLoading}
-              variant="outlined"
-              size="small"
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                fullWidth
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type your message here..."
+                disabled={isLoading}
+                variant="outlined"
+                size="small"
+              />
+              <LoadingButton
+                type="submit"
+                loading={isLoading}
+                variant="contained"
+                endIcon={<SendIcon />}
+                disabled={!input.trim()}
+              >
+                Send
+              </LoadingButton>
+            </Box>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={needsWebSearch}
+                  onChange={(e) => setNeedsWebSearch(e.target.checked)}
+                  icon={<SearchIcon />}
+                  checkedIcon={<SearchIcon />}
+                  disabled={isLoading}
+                />
+              }
+              label="Include web search results"
             />
-            <LoadingButton
-              type="submit"
-              loading={isLoading}
-              variant="contained"
-              endIcon={<SendIcon />}
-              disabled={!input.trim()}
-            >
-              Send
-            </LoadingButton>
           </Box>
         </Box>
       </Box>
