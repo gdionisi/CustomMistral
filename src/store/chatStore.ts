@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ChatState, Message, Conversation } from '../types/chat';
+import { useKnowledgeStore } from './knowledgeStore';
 
 export const useChatStore = create<ChatState>()(
   persist(
@@ -41,6 +42,11 @@ export const useChatStore = create<ChatState>()(
       },
 
       addMessage: (message: Message) => {
+        const messageWithId = {
+          ...message,
+          id: crypto.randomUUID(),
+        };
+
         set((state) => {
           if (!state.currentConversationId) {
             const conversationId = get().createNewConversation();
@@ -49,7 +55,7 @@ export const useChatStore = create<ChatState>()(
                 ...state.conversations,
                 [conversationId]: {
                   id: conversationId,
-                  messages: [message],
+                  messages: [messageWithId],
                   createdAt: new Date().toISOString(),
                   updatedAt: new Date().toISOString(),
                 },
@@ -62,12 +68,44 @@ export const useChatStore = create<ChatState>()(
               ...state.conversations,
               [state.currentConversationId]: {
                 ...state.conversations[state.currentConversationId],
-                messages: [...state.conversations[state.currentConversationId].messages, message],
+                messages: [...state.conversations[state.currentConversationId].messages, messageWithId],
                 updatedAt: new Date().toISOString(),
               },
             },
           };
         });
+
+        return messageWithId;
+      },
+
+      flagAsKnowledge: (messageId: string) => {
+        const state = get();
+        if (!state.currentConversationId) return;
+
+        const conversation = state.conversations[state.currentConversationId];
+        const message = conversation.messages.find((m) => m.id === messageId);
+        
+        if (message) {
+          // Add to knowledge store
+          useKnowledgeStore.getState().addKnowledge(
+            message.content,
+            state.currentConversationId,
+            messageId
+          );
+
+          // Update message in conversation
+          set((state) => ({
+            conversations: {
+              ...state.conversations,
+              [state.currentConversationId!]: {
+                ...state.conversations[state.currentConversationId!],
+                messages: state.conversations[state.currentConversationId!].messages.map((m) =>
+                  m.id === messageId ? { ...m, isKnowledge: true } : m
+                ),
+              },
+            },
+          }));
+        }
       },
 
       clearCurrentConversation: () => {
