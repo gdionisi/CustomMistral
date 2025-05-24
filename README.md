@@ -61,7 +61,7 @@ src/
 
 - React
 - TypeScript
-- Tailwind CSS
+- Material UI
 - Zustand (State Management)
 - Mistral AI SDK
 
