@@ -2,6 +2,7 @@
   "name": "custom-mistral",
   "version": "0.1.0",
   "private": true,
+  "main": "public/electron.js",
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
@@ -28,7 +29,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron-dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron-pack": "yarn build && electron-builder -m",
+    "preelectron-pack": "yarn build"
   },
   "eslintConfig": {
     "extends": [
@@ -49,6 +53,26 @@
     ]
   },
   "devDependencies": {
-    "@types/react-syntax-highlighter": "^15.5.13"
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "concurrently": "^9.1.2",
+    "electron": "^36.3.1",
+    "electron-builder": "^26.0.12",
+    "wait-on": "^8.0.3"
+  },
+  "build": {
+    "appId": "com.custommistral.app",
+    "productName": "Custom Mistral",
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": ["dmg", "zip"]
+    },
+    "files": [
+      "build/**/*",
+      "node_modules/**/*",
+      "public/electron.js"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
   }
 }
