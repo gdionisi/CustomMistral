@@ -16,9 +16,19 @@ if "chat_manager" not in st.session_state:
 # Custom CSS for chat interface
 st.markdown("""
 <style>
-    .stTextInput>div>div>input {
-        background-color: #f0f2f6;
+    /* Main background */
+    .stApp {
+        background-color: #1a1a1a;
     }
+    
+    /* Text input styling */
+    .stTextInput>div>div>input {
+        background-color: #2d2d2d !important;
+        color: white !important;
+        border: 1px solid #404040;
+    }
+    
+    /* Chat message styling */
     .chat-message {
         padding: 1.5rem;
         border-radius: 0.5rem;
@@ -26,16 +36,46 @@ st.markdown("""
         display: flex;
         flex-direction: column;
     }
+    
+    /* User message styling */
     .chat-message.user {
         background-color: #2b313e;
         color: white;
     }
+    
+    /* Assistant message styling */
     .chat-message.assistant {
-        background-color: #f0f2f6;
+        background-color: #2d2d2d;
+        color: #e0e0e0;
+        border: 1px solid #404040;
     }
+    
     .chat-message .content {
         display: flex;
+        flex-direction: column;
         margin-top: 0.5rem;
+    }
+    
+    /* Title color */
+    h1 {
+        color: white !important;
+    }
+    
+    /* Sidebar styling */
+    .css-1d391kg {
+        background-color: #1a1a1a;
+    }
+    
+    /* Button styling */
+    .stButton>button {
+        background-color: #2d2d2d;
+        color: white;
+        border: 1px solid #404040;
+    }
+    
+    .stButton>button:hover {
+        background-color: #404040;
+        border: 1px solid #505050;
     }
 </style>
 """, unsafe_allow_html=True)
