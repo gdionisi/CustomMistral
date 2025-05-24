@@ -31,12 +31,7 @@ npm install
 yarn install
 ```
 
-3. Create a `.env` file in the root directory and add your Mistral AI API key:
-```
-REACT_APP_MISTRAL_API_KEY=your_api_key_here
-```
-
-4. Start the development server:
+3. Start the development server:
 ```bash
 npm start
 # or
