@@ -2,6 +2,7 @@
   "name": "custom-mistral",
   "version": "0.1.0",
   "private": true,
+  "homepage": "./", 
   "main": "public/electron.js",
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -31,7 +32,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron-dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron-pack": "yarn build && electron-builder -m",
+    "electron-pack": "rm -rf build dist && yarn build && electron-builder -m",
     "preelectron-pack": "yarn build"
   },
   "eslintConfig": {
@@ -68,11 +69,19 @@
     },
     "files": [
       "build/**/*",
+      "public/**/*",
       "node_modules/**/*",
       "public/electron.js"
     ],
     "directories": {
-      "buildResources": "assets"
-    }
+      "buildResources": "assets",
+      "output": "dist"
+    },
+    "extraResources": [
+      {
+        "from": "build",
+        "to": "build"
+      }
+    ]
   }
 }
